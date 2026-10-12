@@ -1,12 +1,12 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <unistd.h>
 #include "rle.h"
 
 #define CHUNK_SIZE 4096
 
-int rle_file(const char *input_file_path, const char *output_file_path, char mode) {
+int rle_file(const char *input_file_path, const char *output_file_path, const char mode) {
     if (mode != 'e' && mode != 'd') {
         return -1;
     }
@@ -41,13 +41,53 @@ int rle_file(const char *input_file_path, const char *output_file_path, char mod
     return 0;
 }
 
-int main(int argc,char *argv[]) {
+void print_usage(const char *prog_name) {
+    printf("Usage: %s [decode: -d | encode: -e] -i <input.bin> [-o <output.rle>]\n", prog_name);
+}
 
-    if (argc < 3 || argc > 4 || strlen(argv[1]) > 1 || rle_file(argv[2], (argc == 4) ? argv[3] : NULL, argv[1][0]) < 0) {
-        printf("Usage Instructions: use input file path and optional output file path as argument. \n"
-               "compressionToolkit.exe <mode (decode: d, encode: e> <inputfilepath> <outputfilepath>\n");
+int main(int argc,char *argv[]) {
+    int opt;
+    char mode = '\0';
+    const char *input_file_path = NULL;
+    const char *output_file_path = NULL;
+
+    while ((opt = getopt(argc, argv, "edi:o:")) != -1) {
+        switch (opt) {
+            case 'e':
+                mode = 'e';
+                break;
+
+            case 'd':
+                mode = 'd';
+                break;
+
+            case 'i':
+                input_file_path = optarg;
+                break;
+
+            case 'o':
+                output_file_path = optarg;
+                break;
+
+            case '?':
+            default:
+                print_usage(argv[0]);
+                return -1;
+        }
+    }
+
+    if (mode == '\0') {
+        printf("Error: Must specify mode (encode|decode)\n");
+        print_usage(argv[0]);
         return -1;
     }
 
+    if (input_file_path == NULL) {
+        printf("Error: Must specify input file using -i\n");
+        print_usage(argv[0]);
+        return -1;
+    }
+
+    rle_file(input_file_path, output_file_path, mode);
     return 0;
 }
