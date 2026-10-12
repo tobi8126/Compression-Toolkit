@@ -19,7 +19,7 @@ int rle_file(const char *input_file_path, const char *output_file_path, const ch
         return -1;
     }
 
-    FILE *output = fopen((output_file_path == NULL) ? "..\\out\\rle_output_file.rle" : output_file_path, "wb");
+    FILE *output = fopen((output_file_path == NULL) ? "../out/rle_output_file.rle" : output_file_path, "wb");
     if (output == NULL) {
         perror("Failed to open output file");
         return -1;
@@ -48,7 +48,7 @@ int rle_file(const char *input_file_path, const char *output_file_path, const ch
             printf("Fehler: Keine Gültige .rle Datei.\n");
             fclose(input);
             fclose(output);
-            remove((output_file_path == NULL) ? "..\\out\\rle_output_file.rle" : output_file_path);
+            remove((output_file_path == NULL) ? "../out/rle_output_file.rle" : output_file_path);
         }
 
         decode(input, output);
