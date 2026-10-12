@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include "rle.h"
 
 #include <stdio.h>

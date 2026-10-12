@@ -6,6 +6,8 @@
 
 #define CHUNK_SIZE 4096
 
+const uint8_t MAGIC_NUMBER[3] = {'R', 'L', 'E'};
+
 int rle_file(const char *input_file_path, const char *output_file_path, const char mode) {
     if (mode != 'e' && mode != 'd') {
         return -1;
@@ -17,13 +19,15 @@ int rle_file(const char *input_file_path, const char *output_file_path, const ch
         return -1;
     }
 
-    FILE *output = fopen((output_file_path == NULL) ? "..\\out\\rle_compressed_file.rle" : output_file_path, "wb");
+    FILE *output = fopen((output_file_path == NULL) ? "..\\out\\rle_output_file.rle" : output_file_path, "wb");
     if (output == NULL) {
         perror("Failed to open output file");
         return -1;
     }
 
     if (mode == 'e') {
+        fwrite(MAGIC_NUMBER, 1, 3, output);
+
         uint8_t buffer[CHUNK_SIZE];
         size_t bytes_read;
 
@@ -32,6 +36,21 @@ int rle_file(const char *input_file_path, const char *output_file_path, const ch
         }
     }
     if (mode == 'd') {
+        uint8_t header[3];
+        if (fread(header, 1, 3, input) != 3) {
+            printf("Fehler: Datei ist zu klein oder leer.\n");
+            fclose(input);
+            fclose(output);
+            return -1;
+        }
+
+        if (memcmp(header, MAGIC_NUMBER, 3) != 0) {
+            printf("Fehler: Keine Gültige .rle Datei.\n");
+            fclose(input);
+            fclose(output);
+            remove((output_file_path == NULL) ? "..\\out\\rle_output_file.rle" : output_file_path);
+        }
+
         decode(input, output);
     }
 
