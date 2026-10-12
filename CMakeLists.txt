@@ -6,8 +6,10 @@ set(CMAKE_C_STANDARD 11)
 add_executable(compressionToolkit src/main.c
         src/rle.c
         include/rle.h
-        tests/rle_test.c
-        tests/rle_test.h
+        src/file.c
+        include/file.h
+        src/cli.c
+        include/cli.h
 )
 
 target_include_directories(compressionToolkit PRIVATE include)

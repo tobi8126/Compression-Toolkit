@@ -1,6 +1,7 @@
 //
 // Created by tobia on 22.09.2026.
 //
+#pragma once
 #include <stdio.h>
 
 #ifndef COMPRESSIONTOOLKIT_CLE_H

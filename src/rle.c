@@ -10,7 +10,7 @@ int encode(const uint8_t input[], const size_t len, FILE* output) {
     size_t i = 0;
 
     while (i < len) {
-        //Wenn normaler run, keine Änderungen
+        //Bei Byte-Wiederholung: keine Änderung
         if (i+2 < len && input[i] == input[i+1] && input[i+1] == input[i+2]) {
             uint8_t count = 1;
             while (i+1 < len && input[i] == input[i+1] && count < 127) {
@@ -22,7 +22,7 @@ int encode(const uint8_t input[], const size_t len, FILE* output) {
 
             i++;
         }
-        //Bei
+        //Keine Byte-Wiederholung: MSB auf 1 als Flag für decode und die Länge des Run's zählen
         else {
             const size_t start_index = i;
             uint8_t count = 0b10000000;
@@ -56,14 +56,14 @@ int decode(FILE *input, FILE* output) {
             count ^= 0b10000000;
 
             for (int i = 0; i < count; i++) {
-                const int c = fgetc(input);
-                if (c != EOF) fputc(c, output);
+                const int current_run_byte = fgetc(input);
+                if (current_run_byte != EOF) fputc(current_run_byte, output);
             }
         }
         else {
-            const int c = fgetc(input);
-            for (size_t j = 0; j < count; j++) {
-                if (c != EOF) fputc(c, output);
+            const int repeat_byte = fgetc(input);
+            for (size_t i = 0; i < count; i++) {
+                if (repeat_byte != EOF) fputc(repeat_byte, output);
             }
         }
     }
